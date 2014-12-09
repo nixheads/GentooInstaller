@@ -1,0 +1,61 @@
+#!/bin/bash
+file="/mnt/gentoo/stage3-*.tar.bz2"
+################################################### i know all arent needed in both parts but wth c+p
+dragon_tmp=./configuration
+USER1=`head -1 $dragon_tmp | tail -1`
+SHELL1=`head -2 $dragon_tmp | tail -1`
+HOSTNAME1=`head -3 $dragon_tmp | tail -1`
+HDD1=`head -4 $dragon_tmp | tail -1`
+HDD2=`head -5 $dragon_tmp | tail -1`
+KEYMAP=`head -6 $dragon_tmp | tail -1`
+TIMEZONE=`head -7 $dragon_tmp | tail -1`
+GRUBVER=`head -8 $dragon_tmp | tail -1`
+DUALBOOT=`head -9 $dragon_tmp | tail -1`
+LINHDD=`head -10 $dragon_tmp | tail -1`
+LINPART=`head -11 $dragon_tmp | tail -1`
+WINHDD=`head -12 $dragon_tmp | tail -1`
+WINPART=`head -13 $dragon_tmp | tail -1`
+SWAP=`head -14 $dragon_tmp | tail -1`
+MAKEJOBS=`head -15 $dragon_tmp | tail -1`
+MANUALCONFIG=`head -16 $dragon_tmp | tail -1`
+EXTRABOOTOP=`head -17 $dragon_tmp | tail -1`
+USEFLAGS=`head -18 $dragon_tmp | tail -1`
+
+
+#####################################################
+
+mkdir /mnt/gentoo
+mv ./configuration ./Chroot-Script /mnt/gentoo
+chmod +x /mnt/gentoo/Chroot-Script
+cd /mnt/gentoo
+wget http://www.mirrorservice.org/sites/distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64/stage3-amd64-20141204.tar.bz2
+echo "-----------------------------"
+echo "checking if file downloaded"
+sleep 10
+if [ -f "$file" ]
+then
+	echo "downloaded"
+else
+	clear
+	echo "file did not download please get it manually : http://www.mirrorservice.org/sites/distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64/ "
+	exit
+fi
+
+cd /mnt/gentoo/
+tar xvjpf stage3-*.tar.bz2
+echo 'CFLAGS="-O2 -pipe"' > /mnt/gentoo/etc/portage/make.conf
+echo 'CXXFLAGS="${CFLAGS}"' >> /mnt/gentoo/etc/portage/make.conf
+echo -n 'MAKEOPTS=-j'$MAKEJOBS >> /mnt/gentoo/etc/portage/make.conf 
+echo 'CHOST="x86_64-pc-linux-gnu"' >> /mnt/gentoo/etc/portage/make.conf
+echo 'ACCEPT_LICENSE="*"' >> /mnt/gentoo/etc/portage/make.conf
+echo -n 'USE='  >> /mnt/gentoo/etc/portage/make.conf
+echo $USEFLAGS >> /mnt/gentoo/etc/portage/make.conf
+echo 'PORTDIR="/usr/portage"' >> /mnt/gentoo/etc/portage/make.conf
+echo 'DISTDIR="${PORTDIR}/distfiles"' >> /mnt/gentoo/etc/portage/make.conf
+echo 'PKGDIR="${PORTDIR}/packages"' >> /mnt/gentoo/etc/portage/make.conf
+cp -L /etc/resolv.conf /mnt/gentoo/etc/
+cd 
+mount -t proc proc /mnt/gentoo/proc ; mount --rbind /sys /mnt/gentoo/sys ; mount --rbind /dev /mnt/gentoo/dev
+clear
+echo " LOADING CHROOT.  RUN /Chroot-Script"
+chroot /mnt/gentoo /bin/bash

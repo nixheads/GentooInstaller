@@ -1,0 +1,158 @@
+#!/bin/bash
+######2nd script
+
+dragon_tmp=./configuration
+USER1=`head -1 $dragon_tmp | tail -1`
+SHELL1=`head -2 $dragon_tmp | tail -1`
+HOSTNAME1=`head -3 $dragon_tmp | tail -1`
+HDD1=`head -4 $dragon_tmp | tail -1`
+HDD2=`head -5 $dragon_tmp | tail -1`
+KEYMAP=`head -6 $dragon_tmp | tail -1`
+TIMEZONE=`head -7 $dragon_tmp | tail -1`
+GRUBVER=`head -8 $dragon_tmp | tail -1`
+DUALBOOT=`head -9 $dragon_tmp | tail -1`
+LINHDD=`head -10 $dragon_tmp | tail -1`
+LINPART=`head -11 $dragon_tmp | tail -1`
+WINHDD=`head -12 $dragon_tmp | tail -1`
+WINPART=`head -13 $dragon_tmp | tail -1`
+SWAP=`head -14 $dragon_tmp | tail -1`
+MAKEJOBS=`head -15 $dragon_tmp | tail -1`
+MANUALCONFIG=`head -16 $dragon_tmp | tail -1`
+EXTRABOOTOP=`head -17 $dragon_tmp | tail -1`
+USEFLAGS=`head -18 $dragon_tmp | tail -1`
+
+
+#####################################################
+
+source /etc/profile
+export PS1="(chroot) $PS1"
+emerge-webrsync
+emerge --sync
+PROFILESET=$(eselect profile list | grep desktop | awk 'NR==1{ print $1 }' | grep -o '[0-9]\+')
+eselect profile set $PROFILESET
+echo "$TIMEZONE" > /etc/timezone
+emerge --config sys-libs/timezone-data
+echo "en_GB ISO-8859-1" >> /etc/locale.gen
+echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+locale-gen
+LOCALESET=$(eselect locale list | grep en_GB.iso88591 | sed s/en_GB.iso88591//g | awk 'NR==1{ print $1 }' |  grep -o '[0-9]\+')
+eselect locale set $LOCALESET
+env-update && source /etc/profile
+emerge gentoo-sources
+cd /usr/src/linux
+if [ $MANUALCONFIG == 1 ];then
+make menuconfig
+else
+mv /.config .
+fi
+make 
+make modules_install
+make install
+emerge genkernel
+genkernel --install initramfs
+mv /boot/initramfs* /boot/initramfs
+mv /boot/vmlinuz* /boot/kernel
+mv /boot/kernel* /boot/kernel
+echo -n $HDD1 > /etc/fstab
+echo "  /  ext4  noatime,rw  0 1" >> /etc/fstab
+echo -n $SWAP >> /etc/fstab
+echo "  none  swap  sw  0 0" >> /etc/fstab
+echo "/dev/sr0  /media/cdrom  udf,iso9660  noauto,ro,group,users,noexec  0 0" >> /etc/fstab
+echo"tmpfs  /dev/shm  tmpfs  defaults  0 0" >> /etc/fstab
+echo hostname="$HOSTNAME1" > /etc/conf.d/hostname
+emerge --noreplace netifrc
+touch /README-on-1st-boot
+echo "mv /etc/init.d/net.eth0 to /etc/init.d/net.(INTERFACE NAME)  if your ethernet card is not listed as eth0 in ifconfig " > /README-on-1st-boot
+echo " you may also need to  run ifconfig -a to see you interface , if this is the case run ifconfig INTERFACE-NAME up " >> /README-on-1st-boot
+echo " once you have establihed the card that is being used and turned it on you can now run   rc-update add net.(INTERFACE-NAME) default   to add it to the default run level and be started on boot" >> /README-on-1st-boot
+echo " you can now edit  /etc/conf.d/net and add config_INTERFACE-NAME="dhcp"  to start the connection default with dhcp" >> /README-on-1st-boot
+cd /etc/init.d
+ln -s net.lo net.eth0
+mkdir /media/cdrom
+mv /etc/rc.conf /etc/rc.conf.back
+echo 'rc_parallel="YES"' > /etc/rc.conf
+echo 'rc_shell=/sbin/sulogin' >> /etc/rc.conf
+echo 'rc_hotplug="*"' >> /etc/rc.conf
+echo 'rc_logger="YES"' >> /etc/rc.conf
+echo 'rc_log_path="/var/log/rc.log"' >> /etc/rc.conf
+echo 'rc_log_path="/var/log/rc.log"' >> /etc/rc.conf
+echo 'unicode="YES"' >> /etc/rc.conf
+echo 'rc_sys=""' >> /etc/rc.conf
+echo 'rc_tty_number=12' >> /etc/rc.conf
+mv /etc/conf.d/keymaps /etc/conf.d/keymaps.back
+if [ $KEYMAP == uk ];then
+   echo "uk" > /etc/conf.d/keymaps
+else
+   echo "us" > /etc/conf.d/keymaps
+fi
+echo 'windowkeys="YES"' >> /etc/conf.d/keymaps
+echo 'dumpkeys_charset=""' >> /etc/conf.d/keymaps
+echo 'fix_euro="NO"' >> /etc/conf.d/keymaps
+if [ $DUALBOOT == 1 ];then
+	mv /etc/conf.d/hwclock /etc/conf.d/hwclock.back
+	echo 'clock="local"' > /etc/conf.d/hwclock
+	echo 'clock_args=""' >> /etc/conf.d/hwclock
+else
+	echo " keeping hw clock to UTC, linux only setup"
+fi
+emerge syslog-ng
+rc-update add syslog-ng default
+emerge mlocate
+updatedb
+rc-update add sshd default
+emerge dhcpcd
+rc-update add dbus default
+if [ $GRUBVER == 2 ];then
+	emerge sys-boot/grub
+	grub2-install $HDD2
+	grub2-mkconfig -o /boot/grub/grub.cfg
+else
+	emerge sys-boot/grub:0
+	echo 'default 0' > /boot/grub/grub.conf
+	echo 'timeout 30' >> /boot/grub/grub.conf
+	if [ $DUALBOOT == 1 ];then
+	echo 'title Winblows' >> /boot/grub/grub.conf
+	echo rootnoverify (hd$WINHDD,$WINPART) >> /boot/grub/grub.conf
+	echo 'makeactive' >> /boot/grub/grub.conf
+	echo 'chainloader +1' >> /boot/grub/grub.conf
+	else
+	fi
+	echo '' >> /boot/grub/grub.conf
+	echo 'title Gentoo Linux' >> /boot/grub/grub.conf
+	echo root (hd$LINHDD,$LINPART) >> /boot/grub/grub.conf
+	echo kernel /boot/kernel root=$HDD1 real_root=$HDD1 rootfstype=ext4 $EXTRABOOTOP >> /boot/grub/grub.conf
+	echo 'initrd /boot/initramfs' >> /boot/grub/grub.conf
+	grep -v rootfs /proc/mounts > /etc/mtab >> /boot/grub/grub.conf
+	grub-install --no-floppy $HDD2 >> /boot/grub/grub.conf
+fi
+useradd -m -G users,wheel,audio -s $SHELL1 $USER1
+clear
+echo " "
+echo " "
+echo " "
+echo " ------------------------------------"
+echo "SET PASSWORD FOR ROOT"
+passwd
+echo " "
+echo " SET PASSWORD FOR $USER1 "
+passwd $USER1
+echo "--------------------------------------"
+echo " "
+echo " Clean .tar "
+rm /stage3-*.tar.bz2*
+rm $dragon_tmp
+sleep 2
+clear
+echo " "
+echo " "
+echo " "
+echo " ----------------------"
+echo " run these commands manually from outside of the chroot "
+echo " -----------------------"
+echo " umount -l /mnt/gentoo/dev{/shm,/pts,}"
+echo "umount /mnt/gentoo{/boot,/sys,/proc,}"
+echo "reboot "
+echo "---------------------------"
+echo " AFTER REBOOT READ  THE FILE /README-on-1st-boot"
+echo "script is finished"
+read -p ""

@@ -1,0 +1,37 @@
+gentoo-user
+/bin/bash
+gentoo-local
+/dev/sda1
+/dev/sda
+uk
+GMT
+1
+0
+0
+0
+1
+1
+/dev/sda2
+5
+0
+ 
+"-gnome-shell -nautilus -systemd mmxext vdpau introspection unicode X a52 aac alsa ao blas bzip2 cairo cdda cddb cdparanoia consolekit -hal cdr dbus dri dv dvdr encode ffmpeg fbcon flac glut -gnome gtk -kde -qt lame libnotify mad lm_sensors modules mp3 mp4 mpeg mplayer multilib mysql mysqli ncurses nsplugin ogg opengl pam policykit pdf perl php pulseaudio python sasl seamonkey sqlite sqlite3 sse sse2 symlink syslog tiff udev v4l v4l2 vcd vorbis wavpack wifi win32codecs x264 xcomposite xv xvid bash-completion mmx sse sse2 jpeg dvd xinerama oss glib"
+##line number   |    its use
+#      1        |    USERNAME1
+#      2        |    SHELL1   e.g   /bin/bash
+#      3        |    HOSTNAME1 of machine
+#      4        |    HDD1     this is the device used for linux root   e.g /dev/sda1
+#      5        |    HDD2    this is the boot device grub will be installed to e.g /dev/sda
+#      6        |    KEYMAP   currently set as uk or us
+#      7        |    TIMEZONE 
+#      8        |    GRUBVER   1 = legacy 2 = grub2  #### 3 = uefi enabled (not added support yet)
+#      9        |    DUALBOOT  if your going to use this with windows then set to 1 otherwise 0
+#      10       |    LINHDD   set this to a value of hdd where linux is( /devsda = 0 /dev/sdb = 1 ect)
+#      11       |    LINPART  set this to partition value of linux ( /dev/sda1 = 0  /dev/sda2 = 1 ect) 
+#      12       |    WINHDD   same as line 10 but for windows location  |   its ignored if line 9 = 0
+#      13       |    WINPART  same as line 11 but for Windows location  |   its ignored if line 9 = 0
+#      14       |    SWAP     swap space e.g /dev/sda2
+#      15       |    MAKEJOBS  this is the (cpu cores + 1 )  i.e quad core , set this to 5
+#      16       |    MANUALCONFIG   set to 0 to use .config or 1 to use menuconfig  (KERNEL)
+#      17       |    EXTRABOOTOPS  extra boot options to hadd to grub, can be left blank
+#      18       |    USEFLAGS   this is the use flags in make.conf , needs to be in " "
