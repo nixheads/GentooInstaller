@@ -59,16 +59,19 @@ echo "CONFIG_EFI_STUB=y" >> .config
 echo "CONFIG_CMDLINE_BOOL=y" >> .config
 echo -n 'CONFIG_CMDLINE=' >> .config
 echo '"root='$HDD1' real_root='$HDD1' rootfstype=ext4 '$EXTRABOOTOP'"' >> .config
-#CONFIG_INITRAMFS_SOURCE #using external initramfs
-make -jN
+#General setup  --->
+#    [*] Initial RAM filesystem and RAM disk (initramfs/initrd) support
+#    (/boot/initramfs-3.12.21-gentoo-r1.cpio) Initramfs source file(s)
+#CONFIG_INITRAMFS_SOURCE
+make 
 make modules_install
 make install
-mkdir -p /mnt/EFI/efi
-mkdir -p /mnt/EFI/efi/Boot
-mv /boot/initramfs* /mnt/EFI/efi/Boot/initramfs.img
-mv /boot/vmlinuz* /mnt/EFI/efi/Boot/bootx64.efi
-mv /boot/kernel* /mnt/EFI/efi/Boot/bootx64.efi
-efibootmgr --create --part 1 --label "Gentoo" --loader '\efi\boot\bootx64.efi' -u initrd='\efi\boot\initramfs.img'
+mkdir -p /mnt/EFI/EFI
+mkdir -p /mnt/EFI/EFI/Boot
+mv /boot/initramfs* /mnt/EFI/EFI/Boot/initramfs.img
+mv /boot/vmlinuz* /mnt/EFI/EFI/Boot/kernel.efi
+mv /boot/kernel* /mnt/EFI/EFI/Boot/kernel.efi
+efibootmgr --create --part 1 --label "Gentoo" --loader '\efi\boot\kernel.efi' -u initrd='\efi\boot\initramfs.img'
 else
 make 
 make modules_install
@@ -131,14 +134,11 @@ updatedb
 rc-update add sshd default
 emerge dhcpcd
 rc-update add dbus default
-if [ $GRUBVER == 3 ];then
-else
 if [ $GRUBVER == 2 ];then
 	emerge sys-boot/grub
 	grub2-install $HDD2
 	grub2-mkconfig -o /boot/grub/grub.cfg
-fi
-if [ $GRUBVER == 1 ];then
+else
 	emerge sys-boot/grub:0
 	echo 'default 0' > /boot/grub/grub.conf
 	echo 'timeout 30' >> /boot/grub/grub.conf
@@ -157,7 +157,6 @@ if [ $GRUBVER == 1 ];then
 	grep -v rootfs /proc/mounts > /etc/mtab >> /boot/grub/grub.conf
 	grub-install --no-floppy $HDD2 >> /boot/grub/grub.conf
 fi
-if
 useradd -m -G users,wheel,audio -s $SHELL1 $USER1
 clear
 echo " "

@@ -23,17 +23,7 @@ USEFLAGS=`head -18 $dragon_tmp | tail -1`
 
 
 #####################################################
-echo " -------------------------------------------------------------"
-echo "      Dragonkeepers Gentoo Installer Script v0.2"
-echo " This is stage 1 of the gentoo stage 3 installer script "
-echo " please ensure you have the following :"
-echo " 1. Ensured you have read the configuration file "
-echo " 2. Made a / partition in ext4 format"
-echo " 3. Made a SWAP partiton"
-echo " 4. have an EFI partition - ONLY FOR UEFI - EXPERIMENTAL !"
-echo " 5. Understanding of linux and gentoo"
-echo " 6. Understand that this will only get gentoo to boot cli, youll need to do the rest."
-echo " --------------------------------------------------------------"
+
 mkdir /mnt/gentoo
 mv ./configuration ./Chroot-Script /mnt/gentoo
 chmod +x /mnt/gentoo/Chroot-Script
@@ -48,9 +38,6 @@ then
 else
 	clear
 	echo "file did not download please get it manually : http://www.mirrorservice.org/sites/distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64/ "
-	echo " once the file has been downloaded manually put stage3.tar.bz2 in /mnt/gentoo/"
-	echo " press Enter to continue"
-	read -p ""
 	exit
 fi
 
@@ -70,12 +57,5 @@ cp -L /etc/resolv.conf /mnt/gentoo/etc/
 cd 
 mount -t proc proc /mnt/gentoo/proc ; mount --rbind /sys /mnt/gentoo/sys ; mount --rbind /dev /mnt/gentoo/dev
 clear
-echo ------------------
-if [ GRUBVER == 3 ];then
-echo " use another terminal to:"
-echo " MOUNT YOUR EFI PARTITION TO /mnt/gentoo/boot/EFI/"
-echo " WHEN THIS IS MOUNTED -  press enter  in this terminal to continue"
-read -p ""
-fi
 echo " LOADING CHROOT.  RUN /Chroot-Script"
 chroot /mnt/gentoo /bin/bash
