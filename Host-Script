@@ -34,6 +34,8 @@ echo " 4. have an EFI partition - ONLY FOR UEFI - EXPERIMENTAL !"
 echo " 5. Understanding of linux and gentoo"
 echo " 6. Understand that this will only get gentoo to boot cli, youll need to do the rest."
 echo " --------------------------------------------------------------"
+echo " if your ready then  press enter to continue ."
+read -p ""
 mkdir /mnt/gentoo
 mv ./configuration ./Chroot-Script /mnt/gentoo
 chmod +x /mnt/gentoo/Chroot-Script
