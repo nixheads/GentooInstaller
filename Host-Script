@@ -1,4 +1,8 @@
 #!/bin/bash
+if [[ $UID -ne 0 ]]; then
+echo "($0) must be run as root!"
+exit 10
+fi
 file="/mnt/gentoo/stage3-*.tar.bz2"
 ################################################### i know all arent needed in both parts but wth c+p
 dragon_tmp=./configuration
