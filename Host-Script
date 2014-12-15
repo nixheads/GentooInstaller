@@ -45,27 +45,22 @@ clear
 echo "  use another term to: "
 echo " MOUNT / PARTITION TO /mnt/gentoo/ AND PRESS ENTER TO CONTINUE" #### update to mount automaticly
 read -p ""
-mv ./configuration ./Chroot-Script /mnt/gentoo
-chmod +x /mnt/gentoo/Chroot-Script
+mv ./configuration ./Chroot-Script /mnt/
+chmod +x /mnt/Chroot-Script
 cd /mnt/gentoo
 wget http://www.mirrorservice.org/sites/distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64/stage3-amd64-20141204.tar.bz2
-echo "-----------------------------"
-echo "checking if file downloaded"
-sleep 10
-if [ -f "$file" ]
-then
-	echo "downloaded"
-else
-	clear
-	echo "file did not download please get it manually : http://www.mirrorservice.org/sites/distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64/ "
-	echo " once the file has been downloaded manually put stage3.tar.bz2 in /mnt/gentoo/"
-	echo " press Enter to continue"
-	read -p ""
-	exit
-fi
-
 cd /mnt/gentoo/
 tar xvjpf stage3-*.tar.bz2
+cd 
+mount -t proc proc /mnt/gentoo/proc ; mount --rbind /sys /mnt/gentoo/sys ; mount --rbind /dev /mnt/gentoo/dev
+clear
+echo ------------------
+if [ GRUBVER == 3 ];then
+echo " use another terminal to:"
+echo " MOUNT YOUR EFI PARTITION TO /mnt/gentoo/boot/EFI/"
+echo " WHEN THIS IS MOUNTED -  press enter  in this terminal to continue"
+read -p ""
+fi
 echo 'CFLAGS="-O2 -pipe"' > /mnt/gentoo/etc/portage/make.conf
 echo 'CXXFLAGS="${CFLAGS}"' >> /mnt/gentoo/etc/portage/make.conf
 echo -n 'MAKEOPTS=-j'$MAKEJOBS >> /mnt/gentoo/etc/portage/make.conf 
@@ -77,15 +72,6 @@ echo 'PORTDIR="/usr/portage"' >> /mnt/gentoo/etc/portage/make.conf
 echo 'DISTDIR="${PORTDIR}/distfiles"' >> /mnt/gentoo/etc/portage/make.conf
 echo 'PKGDIR="${PORTDIR}/packages"' >> /mnt/gentoo/etc/portage/make.conf
 cp -L /etc/resolv.conf /mnt/gentoo/etc/
-cd 
-mount -t proc proc /mnt/gentoo/proc ; mount --rbind /sys /mnt/gentoo/sys ; mount --rbind /dev /mnt/gentoo/dev
-clear
-echo ------------------
-if [ GRUBVER == 3 ];then
-echo " use another terminal to:"
-echo " MOUNT YOUR EFI PARTITION TO /mnt/gentoo/boot/EFI/"
-echo " WHEN THIS IS MOUNTED -  press enter  in this terminal to continue"
-read -p ""
-fi
+mv /mnt/configuration /mnt/Chroot-Script /mnt/gentoo/
 echo " LOADING CHROOT.  RUN /Chroot-Script"
 chroot /mnt/gentoo /bin/bash
