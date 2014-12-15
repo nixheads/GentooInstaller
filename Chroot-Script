@@ -131,33 +131,34 @@ updatedb
 rc-update add sshd default
 emerge dhcpcd
 rc-update add dbus default
-if [ $GRUBVER == 3 ];then
-else
+
+if [ $GRUBVER != 3 ];then
 if [ $GRUBVER == 2 ];then
-	emerge sys-boot/grub
-	grub2-install $HDD2
-	grub2-mkconfig -o /boot/grub/grub.cfg
+        emerge sys-boot/grub
+        grub2-install $HDD2
+        grub2-mkconfig -o /boot/grub/grub.cfg
 fi
 if [ $GRUBVER == 1 ];then
-	emerge sys-boot/grub:0
-	echo 'default 0' > /boot/grub/grub.conf
-	echo 'timeout 30' >> /boot/grub/grub.conf
-	if [ $DUALBOOT == 1 ];then
-	echo 'title Winblows' >> /boot/grub/grub.conf
-	echo rootnoverify (hd$WINHDD,$WINPART) >> /boot/grub/grub.conf
-	echo 'makeactive' >> /boot/grub/grub.conf
-	echo 'chainloader +1' >> /boot/grub/grub.conf
-	else
-	fi
-	echo '' >> /boot/grub/grub.conf
-	echo 'title Gentoo Linux' >> /boot/grub/grub.conf
-	echo root (hd$LINHDD,$LINPART) >> /boot/grub/grub.conf
-	echo 'kernel /boot/kernel root='$HDD1 'real_root='$HDD1' rootfstype=ext4' $EXTRABOOTOP >> /boot/grub/grub.conf
-	echo 'initrd /boot/initramfs' >> /boot/grub/grub.conf
-	grep -v rootfs /proc/mounts > /etc/mtab >> /boot/grub/grub.conf
-	grub-install --no-floppy $HDD2 >> /boot/grub/grub.conf
+        emerge sys-boot/grub:0
+        echo 'default 0' > /boot/grub/grub.conf
+        echo 'timeout 30' >> /boot/grub/grub.conf
+        echo '' >> /boot/grub/grub.conf
+        echo 'title Gentoo Linux' >> /boot/grub/grub.conf
+        echo 'root ('hd$LINHDD','$LINPART')' >> /boot/grub/grub.conf
+        echo 'kernel /boot/kernel root='$HDD1 'real_root='$HDD1' rootfstype=ext4' $EXTRABOOTOP >> /boot/grub/grub.conf
+        echo 'initrd /boot/initramfs' >> /boot/grub/grub.conf
+        grep -v rootfs /proc/mounts > /etc/mtab
+        grub-install --no-floppy $HDD2
 fi
-if
+fi
+if [ $DUALBOOT == 1 ];then
+echo 'title Winblows' >> /boot/grub/grub.conf
+echo 'rootnoverify ('hd$WINHDD','$WINPART')' >> /boot/grub/grub.conf
+echo 'makeactive' >> /boot/grub/grub.conf
+echo 'chainloader +1' >> /boot/grub/grub.conf
+fi
+ 
+ 
 useradd -m -G users,wheel,audio -s $SHELL1 $USER1
 clear
 echo " "
