@@ -66,11 +66,11 @@ echo '"root='$HDD1' real_root='$HDD1' rootfstype=ext4 '$EXTRABOOTOP'"' >> .confi
 make -jN
 make modules_install
 make install
-mkdir -p /mnt/EFI/efi
-mkdir -p /mnt/EFI/efi/Boot
-mv /boot/initramfs* /mnt/EFI/efi/Boot/initramfs.img
-mv /boot/vmlinuz* /mnt/EFI/efi/Boot/bootx64.efi
-mv /boot/kernel* /mnt/EFI/efi/Boot/bootx64.efi
+mkdir -p /boot/EFI/efi
+mkdir -p /boot/EFI/efi/Boot
+mv /boot/initramfs* /boot/EFI/efi/Boot/initramfs.img
+mv /boot/vmlinuz* /boot/EFI/efi/Boot/bootx64.efi
+mv /boot/kernel* /boot/EFI/efi/Boot/bootx64.efi
 efibootmgr --create --part 1 --label "Gentoo" --loader '\efi\boot\bootx64.efi' -u initrd='\efi\boot\initramfs.img'
 else
 make 
