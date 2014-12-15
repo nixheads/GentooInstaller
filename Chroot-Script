@@ -31,7 +31,7 @@ emerge-webrsync
 emerge --sync
 PROFILESET=$(eselect profile list | grep desktop | awk 'NR==1{ print $1 }' | grep -o '[0-9]\+')
 eselect profile set $PROFILESET
-echo "$TIMEZONE" > /etc/timezone
+echo $TIMEZONE > /etc/timezone
 emerge --config sys-libs/timezone-data
 echo "en_GB ISO-8859-1" >> /etc/locale.gen
 echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
