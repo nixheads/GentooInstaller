@@ -64,6 +64,7 @@ fi
 echo 'CFLAGS="-O2 -pipe"' > /mnt/gentoo/etc/portage/make.conf
 echo 'CXXFLAGS="${CFLAGS}"' >> /mnt/gentoo/etc/portage/make.conf
 echo -n 'MAKEOPTS=-j'$MAKEJOBS >> /mnt/gentoo/etc/portage/make.conf 
+echo ' ' >> /mnt/gentoo/etc/portage/make.conf
 echo 'CHOST="x86_64-pc-linux-gnu"' >> /mnt/gentoo/etc/portage/make.conf
 echo 'ACCEPT_LICENSE="*"' >> /mnt/gentoo/etc/portage/make.conf
 echo -n 'USE='  >> /mnt/gentoo/etc/portage/make.conf
