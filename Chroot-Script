@@ -44,6 +44,9 @@ cd /usr/src/linux
 if [ $MANUALCONFIG == 1 ];then
 make menuconfig
 else
+echo "Move a .config to this root /  (this is /mnt/gentoo on host)"
+echo " Press Enter to continue"
+read -p ""
 mv /.config .
 fi
 genkernel --install initramfs
