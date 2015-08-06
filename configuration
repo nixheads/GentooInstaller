@@ -16,6 +16,7 @@ GMT
 0
  
 "-gnome-shell -nautilus -systemd mmxext vdpau introspection unicode X a52 aac alsa ao blas bzip2 cairo cdda cddb cdparanoia consolekit -hal cdr dbus dri dv dvdr encode ffmpeg fbcon flac glut -gnome gtk -kde -qt lame libnotify mad lm_sensors modules mp3 mp4 mpeg mplayer multilib mysql mysqli ncurses nsplugin ogg opengl pam policykit pdf perl php pulseaudio python sasl seamonkey sqlite sqlite3 sse sse2 symlink syslog tiff udev v4l v4l2 vcd vorbis wavpack wifi win32codecs x264 xcomposite xv xvid bash-completion mmx sse sse2 jpeg dvd xinerama oss glib"
+"http://www.mirrorservice.org/sites/distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64/stage3-amd64-20150730.tar.bz2"
 ##line number   |    its use
 #      1        |    USERNAME1
 #      2        |    SHELL1   e.g   /bin/bash
@@ -35,7 +36,7 @@ GMT
 #      16       |    MANUALCONFIG   set to 0 to use .config or 1 to use menuconfig  (KERNEL)
 #      17       |    EXTRABOOTOPS  extra boot options to hadd to grub, can be left blank dont add " "
 #      18       |    USEFLAGS   this is the use flags in make.conf , needs to be in " "
-
+#      19       |    Stage 3 URL
 
 ########   IF YOU USE GRUBVER =  3 for  UEFI   - EXPERIMENTAL  
 ######
