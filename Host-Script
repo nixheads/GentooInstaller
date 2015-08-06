@@ -24,7 +24,7 @@ MAKEJOBS=`head -15 $dragon_tmp | tail -1`
 MANUALCONFIG=`head -16 $dragon_tmp | tail -1`
 EXTRABOOTOP=`head -17 $dragon_tmp | tail -1`
 USEFLAGS=`head -18 $dragon_tmp | tail -1`
-
+STAGE3=`head -19 $dragon_tmp | tail -1`
 
 #####################################################
 echo " -------------------------------------------------------------"
@@ -48,7 +48,7 @@ read -p ""
 mv ./configuration ./Chroot-Script /mnt/
 chmod +x /mnt/Chroot-Script
 cd /mnt/gentoo
-wget http://www.mirrorservice.org/sites/distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64/stage3-amd64-20141204.tar.bz2
+wget STAGE3
 cd /mnt/gentoo/
 tar xvjpf stage3-*.tar.bz2
 cd 
