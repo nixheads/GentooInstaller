@@ -48,14 +48,14 @@ read -p ""
 mv ./configuration ./Chroot-Script /mnt/
 chmod +x /mnt/Chroot-Script
 cd /mnt/gentoo
-wget STAGE3
+wget $STAGE3
 cd /mnt/gentoo/
 tar xvjpf stage3-*.tar.bz2
 cd 
 mount -t proc proc /mnt/gentoo/proc ; mount --rbind /sys /mnt/gentoo/sys ; mount --rbind /dev /mnt/gentoo/dev
 clear
 echo ------------------
-if [ GRUBVER == 3 ];then
+if [ $GRUBVER == 3 ];then
 echo " use another terminal to:"
 echo " MOUNT YOUR EFI PARTITION TO /mnt/gentoo/boot/EFI/"
 echo " WHEN THIS IS MOUNTED -  press enter  in this terminal to continue"
