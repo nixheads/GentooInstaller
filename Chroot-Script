@@ -113,9 +113,9 @@ echo 'rc_sys=""' >> /etc/rc.conf
 echo 'rc_tty_number=12' >> /etc/rc.conf
 mv /etc/conf.d/keymaps /etc/conf.d/keymaps.back
 if [ $KEYMAP == uk ];then
-   echo "uk" > /etc/conf.d/keymaps
+   echo "keymap=uk" > /etc/conf.d/keymaps
 else
-   echo "us" > /etc/conf.d/keymaps
+   echo "keymap=us" > /etc/conf.d/keymaps
 fi
 echo 'windowkeys="YES"' >> /etc/conf.d/keymaps
 echo 'dumpkeys_charset=""' >> /etc/conf.d/keymaps

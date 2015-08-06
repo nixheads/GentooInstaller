@@ -24,7 +24,7 @@ MAKEJOBS=`head -15 $dragon_tmp | tail -1`
 MANUALCONFIG=`head -16 $dragon_tmp | tail -1`
 EXTRABOOTOP=`head -17 $dragon_tmp | tail -1`
 USEFLAGS=`head -18 $dragon_tmp | tail -1`
-
+STAGE3=`head -19 $dragon_tmp | tail -1`
 
 #####################################################
 echo " -------------------------------------------------------------"
@@ -48,14 +48,14 @@ read -p ""
 mv ./configuration ./Chroot-Script /mnt/
 chmod +x /mnt/Chroot-Script
 cd /mnt/gentoo
-wget http://mirrors.rit.edu/gentoo/releases/amd64/autobuilds/current-stage3-amd64/stage3-amd64-20150730.tar.bz2 
+wget $STAGE3
 cd /mnt/gentoo/
 tar xvjpf stage3-*.tar.bz2
-cd 
+cd
 mount -t proc proc /mnt/gentoo/proc ; mount --rbind /sys /mnt/gentoo/sys ; mount --rbind /dev /mnt/gentoo/dev
 clear
 echo ------------------
-if [ GRUBVER == 3 ];then
+if [ $GRUBVER == 3 ];then
 echo " use another terminal to:"
 echo " MOUNT YOUR EFI PARTITION TO /mnt/gentoo/boot/EFI/"
 echo " WHEN THIS IS MOUNTED -  press enter  in this terminal to continue"
@@ -63,7 +63,7 @@ read -p ""
 fi
 echo 'CFLAGS="-O2 -pipe"' > /mnt/gentoo/etc/portage/make.conf
 echo 'CXXFLAGS="${CFLAGS}"' >> /mnt/gentoo/etc/portage/make.conf
-echo -n 'MAKEOPTS=-j'$MAKEJOBS >> /mnt/gentoo/etc/portage/make.conf 
+echo -n 'MAKEOPTS=-j'$MAKEJOBS >> /mnt/gentoo/etc/portage/make.conf
 echo ' ' >> /mnt/gentoo/etc/portage/make.conf
 echo 'CHOST="x86_64-pc-linux-gnu"' >> /mnt/gentoo/etc/portage/make.conf
 echo 'ACCEPT_LICENSE="*"' >> /mnt/gentoo/etc/portage/make.conf
