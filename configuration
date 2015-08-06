@@ -3,7 +3,7 @@ gentoo-user
 gentoo-local
 /dev/sda1
 /dev/sda
-uk
+keymap=us
 GMT
 1
 0
