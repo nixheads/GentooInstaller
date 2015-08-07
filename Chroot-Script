@@ -1,6 +1,10 @@
 #!/bin/bash
 ######2nd script
-#####################need efi partition mounted at /boot/EFI
+if [[ $UID -ne 0 ]]; then
+     echo "($0) must be run as root!"
+     exit 10
+fi
+
 
 dragon_tmp=./configuration
 USER1=`head -1 $dragon_tmp | tail -1`
@@ -73,7 +77,7 @@ mv /boot/vmlinuz* /boot/EFI/efi/Boot/bootx64.efi
 mv /boot/kernel* /boot/EFI/efi/Boot/bootx64.efi
 efibootmgr --create --part 1 --label "Gentoo" --loader '\efi\boot\bootx64.efi' -u initrd='\efi\boot\initramfs.img'
 else
-make 
+make
 make modules_install
 make install
 mv /boot/initramfs* /boot/initramfs
@@ -160,8 +164,8 @@ echo 'rootnoverify ('hd$WINHDD','$WINPART')' >> /boot/grub/grub.conf
 echo 'makeactive' >> /boot/grub/grub.conf
 echo 'chainloader +1' >> /boot/grub/grub.conf
 fi
- 
- 
+
+
 useradd -m -G users,wheel,audio -s $SHELL1 $USER1
 clear
 echo " "
