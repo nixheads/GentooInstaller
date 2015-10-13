@@ -3,77 +3,80 @@ if [[ $UID -ne 0 ]]; then
     echo "($0) must be run as root!"
     exit 10
 fi
-
-file="/mnt/gentoo/stage3-*.tar.bz2"
-################################################### i know all arent needed in both parts but wth c+p
-dragon_tmp=./configuration
-USER1=`head -1 $dragon_tmp | tail -1`
-SHELL1=`head -2 $dragon_tmp | tail -1`
-HOSTNAME1=`head -3 $dragon_tmp | tail -1`
+dragon_tmp=/tmp/dragon
 HDD1=`head -4 $dragon_tmp | tail -1`
-HDD2=`head -5 $dragon_tmp | tail -1`
-KEYMAP=`head -6 $dragon_tmp | tail -1`
-TIMEZONE=`head -7 $dragon_tmp | tail -1`
 GRUBVER=`head -8 $dragon_tmp | tail -1`
-DUALBOOT=`head -9 $dragon_tmp | tail -1`
-LINHDD=`head -10 $dragon_tmp | tail -1`
-LINPART=`head -11 $dragon_tmp | tail -1`
-WINHDD=`head -12 $dragon_tmp | tail -1`
-WINPART=`head -13 $dragon_tmp | tail -1`
-SWAP=`head -14 $dragon_tmp | tail -1`
 MAKEJOBS=`head -15 $dragon_tmp | tail -1`
-MANUALCONFIG=`head -16 $dragon_tmp | tail -1`
-EXTRABOOTOP=`head -17 $dragon_tmp | tail -1`
 USEFLAGS=`head -18 $dragon_tmp | tail -1`
 STAGE3=`head -19 $dragon_tmp | tail -1`
-
+ROOTFS=`head -20 $dragon_tmp | tail -1`
 #####################################################
+function intro {
 echo " -------------------------------------------------------------"
-echo "      Dragonkeepers Gentoo Installer Script v0.2"
+echo "      Dragonkeepers Gentoo Installer Script v0.3"
 echo " This is stage 1 of the gentoo stage 3 installer script "
 echo " please ensure you have the following :"
-echo " 1. Ensured you have read the configuration file "
+echo " 1. Ensured you have made a configuration file "
 echo " 2. Made a / partition in ext4 format"
 echo " 3. Made a SWAP partiton"
 echo " 4. have an EFI partition - ONLY FOR UEFI - EXPERIMENTAL !"
 echo " 5. Understanding of linux and gentoo"
 echo " 6. Understand that this will only get gentoo to boot cli, youll need to do the rest."
 echo " --------------------------------------------------------------"
-echo " if your ready then  press enter to continue ."
-read -p ""
-mkdir /mnt/gentoo
-clear
-echo "  use another term to: "
-echo " MOUNT / PARTITION TO /mnt/gentoo/ AND PRESS ENTER TO CONTINUE" #### update to mount automaticly
-read -p ""
-mv ./configuration ./Chroot-Script /mnt/
-chmod +x /mnt/Chroot-Script
-cd /mnt/gentoo
-wget $STAGE3
-cd /mnt/gentoo/
-tar xvjpf stage3-*.tar.bz2
-cd
-mount -t proc proc /mnt/gentoo/proc ; mount --rbind /sys /mnt/gentoo/sys ; mount --rbind /dev /mnt/gentoo/dev
-clear
-echo ------------------
 if [ $GRUBVER == 3 ];then
+if [ ! -d "$ROOTFS" ]; then
+  mkdir $ROOTFS
+fi
 echo " use another terminal to:"
-echo " MOUNT YOUR EFI PARTITION TO /mnt/gentoo/boot/EFI/"
-echo " WHEN THIS IS MOUNTED -  press enter  in this terminal to continue"
+echo -n " MOUNT YOUR EFI PARTITION TO "
+echo -n $ROOTFS
+echo "/boot/EFI/"
+
+echo "AND PRESS ENTER TO CONTINUE" 
 read -p ""
 fi
-echo 'CFLAGS="-O2 -pipe"' > /mnt/gentoo/etc/portage/make.conf
-echo 'CXXFLAGS="${CFLAGS}"' >> /mnt/gentoo/etc/portage/make.conf
-echo -n 'MAKEOPTS=-j'$MAKEJOBS >> /mnt/gentoo/etc/portage/make.conf
-echo ' ' >> /mnt/gentoo/etc/portage/make.conf
-echo 'CHOST="x86_64-pc-linux-gnu"' >> /mnt/gentoo/etc/portage/make.conf
-echo 'ACCEPT_LICENSE="*"' >> /mnt/gentoo/etc/portage/make.conf
-echo -n 'USE='  >> /mnt/gentoo/etc/portage/make.conf
-echo $USEFLAGS >> /mnt/gentoo/etc/portage/make.conf
-echo 'PORTDIR="/usr/portage"' >> /mnt/gentoo/etc/portage/make.conf
-echo 'DISTDIR="${PORTDIR}/distfiles"' >> /mnt/gentoo/etc/portage/make.conf
-echo 'PKGDIR="${PORTDIR}/packages"' >> /mnt/gentoo/etc/portage/make.conf
-cp -L /etc/resolv.conf /mnt/gentoo/etc/
-mv /mnt/configuration /mnt/Chroot-Script /mnt/gentoo/
+echo "waiting 10 seconds"
+sleep 10
+
+}
+
+function setrootfs {
+if [ ! -d "$ROOTFS" ]; then
+  mkdir $ROOTFS
+fi
+mount $HDD1 $ROOTFS
+mv ./configuration ./Chroot-Script /mnt/
+chmod +x /mnt/Chroot-Script
+cd $ROOTFS
+wget $STAGE3
+cd $ROOTFS
+tar xvjpf stage3-*.tar.bz2
+cd
+mount -t proc proc $ROOTFS/proc ; mount --rbind /sys $ROOTFS/sys ; mount --rbind /dev $ROOTFS/dev
+clear
+}
+
+function config {
+echo 'CFLAGS="-O2 -pipe"' > $ROOTFS/etc/portage/make.conf
+echo 'CXXFLAGS="${CFLAGS}"' >> $ROOTFS/etc/portage/make.conf
+echo -n 'MAKEOPTS=-j'$MAKEJOBS >> $ROOTFS/etc/portage/make.conf
+echo ' ' >> $ROOTFS/etc/portage/make.conf
+echo 'CHOST="x86_64-pc-linux-gnu"' >> $ROOTFS/etc/portage/make.conf
+echo 'ACCEPT_LICENSE="*"' >> $ROOTFS/etc/portage/make.conf
+echo -n 'USE='  >> $ROOTFS/etc/portage/make.conf
+echo $USEFLAGS >> $ROOTFS/etc/portage/make.conf
+echo 'PORTDIR="/usr/portage"' >> $ROOTFS/etc/portage/make.conf
+echo 'DISTDIR="${PORTDIR}/distfiles"' >> $ROOTFS/etc/portage/make.conf
+echo 'PKGDIR="${PORTDIR}/packages"' >> $ROOTFS/etc/portage/make.conf
+cp -L /etc/resolv.conf $ROOTFS/etc/
+}
+
+intro
+setrootfs
+config
+echo " moved config to  rootfs "
+mv /mnt/configuration /mnt/Chroot-Script $ROOTFS/
 echo " LOADING CHROOT.  RUN /Chroot-Script"
-chroot /mnt/gentoo /bin/bash
+#chroot $ROOTFS /bin/bash ##hopefully this change loads script in the chroot"
+chroot $ROOTFS/ $ROOTFS/Chroot-Script
+exit

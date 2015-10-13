@@ -1,0 +1,189 @@
+#!/bin/bash
+#########################
+#setting my default vars#
+#########################
+username="gentoo-user"
+shell="/bin/bash"
+hostname="gentoo-local"
+root="/dev/sda1"
+grub_dev="/dev/sda"
+keymap="uk"
+timezone="GMT"
+grub_ver="1"
+dualboot="0"
+linuxhd="0"
+linuxpart="0"
+winhd="1"
+winpart="1"
+swap="/dev/sda2"
+makejobs="5"
+manualconfig="1"
+extrabootop=" "
+useflags=$( cat USEFLAGS )
+stage3url='"http://mirrors.rit.edu/gentoo/releases/amd64/autobuilds/current-stage3-amd64/stage3-amd64-20150730.tar.bz2"'
+mountpoint="/mnt/gentoo"
+#########################
+FILE=/tmp/dragon
+INPUT=/tmp/input.$$
+OUTPUT=/tmp/output.$$
+trap "rm $OUTPUT; rm $INPUT; exit" SIGHUP SIGINT SIGTERM
+
+#  $1 - height
+#  $2 - width
+#  $3 - title
+function display_output(){
+	local h=${1-10}
+	local w=${2-41}
+	local t=${3-Output}
+	dialog --backtitle "DragonKeepers Gentoo Installer" --title "${t}" --clear --msgbox "$(<$OUTPUT)" ${h} ${w}
+}
+
+
+
+# Functions For Selections ###########
+function mainmenu {
+while true
+do
+### Main menu ###
+dialog --clear --backtitle "DragonKeepers Gentoo Installer" \
+--title "[Main Menu]" \
+--menu "You can use the UP/DOWN arrow keys to move \n\
+ENTER/RETURN key to select \n\
+LEFT/RIGHT arrows to highlight bottom row.\n\
+" 15 50 3 \
+Config "Change Configuration options" \
+Install "Run after Config" \
+Exit "Exit to the shell" 2>"${INPUT}"
+menuitem=$(<"${INPUT}")
+case $menuitem in
+	Config) Config_Menu;;
+	Install) RunInstall;;
+	Exit) echo "Closed Installer"; break;;
+esac
+done
+}
+function Config_Menu(){
+while true
+do
+### 2nd menu configs ###
+dialog --clear --backtitle "DragonKeepers Gentoo Installer" \
+--title "[Configuration Setup]" \
+--menu "You can use the UP/DOWN arrow keys to move \n\
+ENTER/RETURN key to select \n\
+LEFT/RIGHT arrows to highlight bottom row.\n\
+" 16 55 30 \
+UserName "Main users name" \
+Shell "Shell/ default /bin/bash" \
+Hostname "Machine Hostname" \
+Root "Dev for root e.g /dev/sda1" \
+Grub_dev "Dev to install Grub e.g /dev/sda" \
+Keymap "Set keymap to uk or us" \
+TimeZone "Set your timezone" \
+Grub_Ver "1=legacy 2=grub2 3=uefi" \
+DualBoot "1=Have windows 0=No/Other" \
+LinuxHD "/dev/sda=0 /dev/sdb=1  ect.." \
+LinuxPart "/dev/sda1=0 /dev/sda2=1 ect.." \
+WINHD "Same as LinuxHD but for windows" \
+WINPART "Same as LinuxPart but for windows" \
+SWAP "Swap partition" \
+MakeJobs "Cpu cores +1  e.g 5 for quad core" \
+ManualConfig "0=own.config  1= makemenuconfig" \
+ExtraBootOp "Exra boot options, can be blank" \
+UseFlags "Global Use Flags" \
+Stage3URL "url to download stage3.tar.gz" \
+MountPoint "Hdd mount Point" \
+Go_Back "Go back to prev menu" 2>"${INPUT}" \
+WriteConfig "Write the configuration to file" 
+menuitem=$(<"${INPUT}")
+case $menuitem in
+	UserName) inputbox ; username=$answer;;
+	Shell) inputbox ; shell=$answer;;
+	Hostname) inputbox ; hostname=$answer;;
+	Root) inputbox ; root=$answer;;
+	Grub_dev) inputbox ; grub_dev=$answer;;
+	Keymap) inputbox ; keymap=$answer;;
+	TimeZone) inputbox ; timezone=$answer;;
+	Grub_Ver) inputbox ; grub_ver=$answer;;
+	DualBoot) inputbox ; dualboot=$answer;;
+	LinuxHD) inputbox ; linuxhd=$answer;;
+	LinuxPart) inputbox ; linuxpart=$answer;;
+	WINHD) inputbox ; winhd=$answer;;
+	WINPART) inputbox ; winpart=$answer;;
+	SWAP) inputbox ; swap=$answer;;
+	MakeJobs) inputbox ; makejobs=$answer;;
+	ManualConfig) inputbox ; manualconfig=$answer;;
+	ExtraBootOp) inputbox ; extrabootop=$answer;;
+	UseFlags) inputbox ; useflags=$answer;;
+	Stage3URL) inputbox ; stage3url=$answer;;
+	MountPoint) inputbox ; mountpoint=$answer;;
+	WriteConfig) WRITECONFIG;;
+	Go_Back) break;;
+esac
+done
+}
+function WRITECONFIG {
+echo $username > $FILE
+echo $shell >> $FILE
+echo $hostname >> $FILE
+echo $root >> $FILE
+echo $grub_dev >> $FILE
+echo $keymap >> $FILE
+echo $timezone >> $FILE
+echo $grub_ver >> $FILE
+echo $dualboot >> $FILE
+echo $linuxhd >> $FILE
+echo $linuxpart >> $FILE
+echo $winhd >> $FILE
+echo $winpart >> $FILE
+echo $swap >> $FILE
+echo $makejobs >> $FILE
+echo $manualconfig >> $FILE
+echo $extrabootop >> $FILE
+echo $useflags >> $FILE
+echo $stage3url >> $FILE
+echo $mountpoint >> $FILE
+
+}
+
+function inputbox {
+dialog --title "User Selection" \
+--backtitle "Dragonkeepers Gentoo Installer" \
+--inputbox "Input Variable Change" 8 60 2>$OUTPUT
+answer=$(<$OUTPUT)
+}
+
+function RunInstall(){
+##if file no exist write default config
+if [ ! -f $FILE ];
+then
+	WRITECONFIG
+fi
+	./Host-Script
+	echo "scripts done"
+	echo "clean up"
+	umount -l $ROOTFS/dev{/shm,/pts}
+	umount $ROOTFS{/boot/efi,/boot,/sys,/proc}
+	umount $ROOTFS
+	echo "umounted all"
+	sleep 5
+	echo "Your installation has completed. Hit OK to exit and then reboot system." >$OUTPUT
+	display_output 6 60 "Installer Complete"
+	break
+}
+
+
+mainmenu
+
+if [ -f $OUTPUT ];
+	then
+		rm $OUTPUT
+fi
+if [ -f $FILE ];
+	then
+		rm $FILE
+fi
+if [ -f $INPUT ];
+	then
+		 rm $INPUT
+fi
+clear
