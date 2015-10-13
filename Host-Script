@@ -1,8 +1,9 @@
 #!/bin/bash
 if [[ $UID -ne 0 ]]; then
-echo "($0) must be run as root!"
-exit 10
+    echo "($0) must be run as root!"
+    exit 10
 fi
+
 file="/mnt/gentoo/stage3-*.tar.bz2"
 ################################################### i know all arent needed in both parts but wth c+p
 dragon_tmp=./configuration
@@ -51,7 +52,7 @@ cd /mnt/gentoo
 wget $STAGE3
 cd /mnt/gentoo/
 tar xvjpf stage3-*.tar.bz2
-cd 
+cd
 mount -t proc proc /mnt/gentoo/proc ; mount --rbind /sys /mnt/gentoo/sys ; mount --rbind /dev /mnt/gentoo/dev
 clear
 echo ------------------
@@ -63,7 +64,7 @@ read -p ""
 fi
 echo 'CFLAGS="-O2 -pipe"' > /mnt/gentoo/etc/portage/make.conf
 echo 'CXXFLAGS="${CFLAGS}"' >> /mnt/gentoo/etc/portage/make.conf
-echo -n 'MAKEOPTS=-j'$MAKEJOBS >> /mnt/gentoo/etc/portage/make.conf 
+echo -n 'MAKEOPTS=-j'$MAKEJOBS >> /mnt/gentoo/etc/portage/make.conf
 echo ' ' >> /mnt/gentoo/etc/portage/make.conf
 echo 'CHOST="x86_64-pc-linux-gnu"' >> /mnt/gentoo/etc/portage/make.conf
 echo 'ACCEPT_LICENSE="*"' >> /mnt/gentoo/etc/portage/make.conf
