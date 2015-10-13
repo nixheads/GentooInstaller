@@ -20,8 +20,6 @@ MAKEJOBS=`head -15 $dragon_tmp | tail -1`
 MANUALCONFIG=`head -16 $dragon_tmp | tail -1`
 EXTRABOOTOP=`head -17 $dragon_tmp | tail -1`
 USEFLAGS=`head -18 $dragon_tmp | tail -1`
-
-
 #####################################################
 function 1stReadMe {  ### come back to
 touch /README-on-1st-boot

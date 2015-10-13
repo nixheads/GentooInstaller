@@ -161,9 +161,9 @@ fi
 	./Host-Script
 	echo "scripts done"
 	echo "clean up"
-	umount -l $ROOTFS/dev{/shm,/pts}
-	umount $ROOTFS{/boot/efi,/boot,/sys,/proc}
-	umount $ROOTFS
+	umount -l $mountpoint/dev{/shm,/pts}
+	umount $mountpoint{/boot/efi,/boot,/sys,/proc}
+	umount $mountpoint
 	echo "umounted all"
 	sleep 5
 	echo "Your installation has completed. Hit OK to exit and then reboot system." >$OUTPUT
