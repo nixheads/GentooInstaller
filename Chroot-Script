@@ -1,10 +1,5 @@
 #!/bin/bash
 ######2nd script
-if [[ $UID -ne 0 ]]; then
-     echo "($0) must be run as root!"
-     exit 10
-fi
-
 
 dragon_tmp=./configuration
 USER1=`head -1 $dragon_tmp | tail -1`
