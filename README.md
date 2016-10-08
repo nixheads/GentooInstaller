@@ -6,7 +6,7 @@ Gentoo installer for stage 3  setup+chroot
 This is now a working script:
 INTSTRUCTIONS:
 
-1. `git clone https://github.com/dropoffpoint/GentooInstaller`
+1. `git clone https://github.com/nixheads/GentooInstaller`
 2. `cd GentooInstaller`
 3. (optional) manually edit useflags using USEFLAG file
 4. `./Main`
